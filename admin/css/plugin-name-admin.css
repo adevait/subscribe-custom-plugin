@@ -1,0 +1,29 @@
+/**l_settings_section'        // The name of the section to which this field belongs
+
+	);
+	add_settings_field( 
+    'content',                      // ID used to identify the field throughout the theme
+    'Email Content',                           // The label to the left of the option interface element
+    'subscribe_email_content_callback',   // The name of the function responsible for rendering the option interface
+    'plugin-name',                          // The page on which this option will be displayed
+    'email_settings_section'         // The name of the section to which this field belon
+	);
+	register_setting(
+    'email',
+    'opt_in_subject'
+	);	
+	register_setting(
+    'email',
+    'opt_in_content'
+	);
+	register_setting(
+    'email',
+    'subject'
+	);	
+	register_setting(
+    'email',
+    'content'
+	);	
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
