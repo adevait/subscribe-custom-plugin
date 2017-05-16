@@ -32,35 +32,32 @@ if (! defined('WPINC')) {
 require_once('public/partials/plugin-name-public-display.php');
 
 add_action('wp_enqueue_scripts', 'ajax_test_enqueue_scripts');
-function ajax_test_enqueue_scripts()
-{
+function ajax_test_enqueue_scripts() {
     wp_enqueue_script('jquery');
 }
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-plugin-name-activator.php
  */
-function activate_plugin_name()
-{
+function activate_plugin_name() {
     require_once plugin_dir_path(__FILE__) . 'includes/class-plugin-name-activator.php';
     Plugin_Name_Activator::activate();
+    create_table();
 }
 
 /**
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-plugin-name-deactivator.php
  */
-function deactivate_plugin_name()
-{
+function deactivate_plugin_name() {
     require_once plugin_dir_path(__FILE__) . 'includes/class-plugin-name-deactivator.php';
     Plugin_Name_Deactivator::deactivate();
 }
 
-function create_table()
-{
+function create_table() {
     global $wpdb;
     $charset_collate = $wpdb->get_charset_collate();
-    $table_name = $wpdb->prefix . 'stefan';
+    $table_name = $wpdb->prefix . 'subscribe';
 
     $sql = "CREATE TABLE $table_name (
 		id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -78,6 +75,44 @@ register_activation_hook(__FILE__, 'activate_plugin_name');
 register_deactivation_hook(__FILE__, 'deactivate_plugin_name');
 register_activation_hook(__FILE__, 'create_table');
 
+add_action( 'init', 'process_post' );
+
+function process_post() {
+
+    if(strpos($_SERVER["REQUEST_URI"], 'verify')) {
+
+        if(isset($_GET['email']) && !empty($_GET['email']) AND isset($_GET['hash']) && !empty($_GET['hash'])) {
+            global $wpdb;
+            $email = $_GET['email']; 
+            $hash = $_GET['hash']; 
+
+            $search = $wpdb->get_results("SELECT email, hash, confirm FROM wp_subscribe WHERE email='".$email."' AND hash='".$hash."' AND confirm='0'");
+            if(!empty($search)){
+                $match = 1;
+            }
+            else{
+                $match = 0;
+            }
+            if($match > 0){
+                    $table = $wpdb->prefix . 'subscribe';
+                    $data = array('confirm'=>'1');
+                    $where = array(
+                        'email' => $email,
+                        'hash' => $hash,
+                        'confirm' => 0,
+                    );
+                    $wpdb->update($table, $data, $where);
+                    echo '<div>Your registration was succesful, from now on you will be the first to receive the latest news.</div>';
+                    ?><a href="<?php echo home_url()?>" type="button">Go back</a><?php
+                    
+            }else{
+                    echo '<div>Invalid approach, please use the link that has been send to your email.</div>';
+                ?><a href="<?php echo home_url()?>" type="button">Go back</a><?php
+            }
+        }
+        wp_die();
+    }
+}
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
@@ -93,8 +128,7 @@ require plugin_dir_path(__FILE__) . 'includes/class-plugin-name.php';
  *
  * @since    1.0.0
  */
-function run_plugin_name()
-{
+function run_plugin_name(){
     $plugin = new Plugin_Name();
     $plugin->run();
 }
