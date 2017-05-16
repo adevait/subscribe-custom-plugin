@@ -11,19 +11,16 @@
  * @package    Plugin_Name
  * @subpackage Plugin_Name/public/partials
  */
-class subscribe_widget extends WP_Widget
-{
+class subscribe_widget extends WP_Widget{
 
     // constructor
-    public function __construct()
-    {
+    public function __construct(){
         parent::__construct(false, $name = __('Subscribe Widget', 'wp_widget_plugin'));
         add_action('wp_ajax_sub_action', array( $this, 'sub_action' ));
     }
 
     // widget form creation
-    public function form($instance)
-    {
+    public function form($instance){
         if ($instance) {
             $text = esc_attr($instance['text']);
         } else {
@@ -38,8 +35,7 @@ class subscribe_widget extends WP_Widget
     }
 
     // widget update
-    public function update($new_instance, $old_instance)
-    {
+    public function update($new_instance, $old_instance){
         $instance = $old_instance;
         $instance['text'] = strip_tags($new_instance['text']);
         return $instance;
@@ -54,12 +50,13 @@ class subscribe_widget extends WP_Widget
 		   <form method="POST" action="" id="sb_form">
 		   		<input id="email" type="email" name="email" placeholder="<?php echo get_option('placeholder'); ?>" required unique>
 		   		<input type="hidden" name="action" value="Subscribe"/>
-		   		<input type="button"  id="subscribe" name="subscribe" value="<?php echo get_option('button_text'); ?>" style="background-color: orange; color:white; border: 2px solid; font-size: 10px; border-radius: 25px; width: 100px; height: 25px;">
+		   		<input type="button" id="subscribe" name="subscribe" value="<?php echo get_option('button_text'); ?>">
 		   		<label id="successmessage"></label>
 		   </form>
 		   <script type="text/javascript">
 		   		jQuery(document).ready(function($) {
 		   			jQuery("#sb_form #subscribe").click(function(){
+
 			   			jQuery.ajax({
 	        				type: "POST",
 	        				url: '/wp-admin/admin-ajax.php',
@@ -78,41 +75,26 @@ class subscribe_widget extends WP_Widget
      					});
 		   				
 		   			});
-/*
-			   		function Subscribe() {
-			   		}*/
-		   		});
+	   		});
 		   		
 		   </script>
 	<?php
-
-            /*function Subscribe(){
-    		var email = JQuery('#email').val();
-
-    		JQuery("#subs").removeClass("hidden");
-    	}
-
-
-       	JQuery(document).ready(function(){
-
-    	});*/
     }
-
-    public function sub_action()
-    {
+    public function sub_action(){
         global $wpdb;
         if ($_POST['email']) {
             $email = $_POST['email'];
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                echo wp_send_json_error();
+                echo wp_send_json_error(); 
             } else {
-                $retrieve_data = $wpdb->get_results("SELECT email FROM wp_stefan_stefan WHERE `email` = '$email'");
+                $table_name = $wpdb->prefix . "subscribe";
+                $retrieve_data = $wpdb->get_results("SELECT email FROM $table_name WHERE `email` = '$email'");
                 if ($retrieve_data && $wpdb->num_rows > 0) {
                     echo wp_send_json_error();
                 } else {
                     $hash = md5(rand(0, 1000));
                     $wpdb->insert(
-                        'wp_stefan_stefan',
+                        'wp_subscribe',
                         array(
                               'time' => current_time('mysql', 1),
                               'email' => $_POST['email'],
@@ -122,11 +104,9 @@ class subscribe_widget extends WP_Widget
                             );
                     if (get_option('opt_in')) {
                         $subject = get_option('opt_in_subject');
-                        $content = get_option('opt_in_content'). home_url() . '/verify.php?email='.$email.'&hash='.$hash.'';
+                        $content = get_option('opt_in_content'). "\r\n".home_url() . '/verify?email='.$email.'&hash='.$hash.'';
                         $headers[] = 'From:'. get_option('name').'<'. get_option('email'). '>';
-                        //$headers = "From:".get_option('name')."Email:".get_option('email')."\r\n";
                         wp_mail($email, $subject, $content, $headers);
-                        //send_mail($email);
                     }
                     echo wp_send_json_success();
                 }
@@ -140,16 +120,14 @@ class subscribe_widget extends WP_Widget
 
 
 // register widget
-function register_subscribe_widget()
-{
+function register_subscribe_widget(){
     register_widget('subscribe_widget');
 }
 add_action('widgets_init', 'register_subscribe_widget');
 
 //add_action('wp_head', 'myplugin_ajaxurl');
 
-function myplugin_ajaxurl()
-{
+function myplugin_ajaxurl(){
     echo '<script type="text/javascript">
            var ajaxurl = "' . admin_url('admin-ajax.php') . '";
          </script>';
