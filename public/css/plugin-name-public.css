@@ -2,3 +2,6 @@
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
+button, input[type="button"], input[type="reset"], input[type="submit"]{
+ 	width:330px;
+ }

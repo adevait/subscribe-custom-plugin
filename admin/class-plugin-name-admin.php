@@ -59,6 +59,7 @@ class Plugin_Name_Admin{
      */
     public function enqueue_styles(){
         wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/plugin-name-admin.css', array(), $this->version, 'all');
+        wp_enqueue_style('wp-color-picker');
     }
 
     /**
@@ -68,6 +69,8 @@ class Plugin_Name_Admin{
      */
     public function enqueue_scripts(){
         wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/plugin-name-admin.js', array( 'jquery' ), $this->version, false);
+        wp_enqueue_script( 'custom-script-handle', plugins_url( 'js/custom-script.js', __FILE__ ), array( 'wp-color-picker' ), false, true );
+        // wp_enqueue_script( 'wp-color-picker-alpha', plugins_url( 'js/wp-color-picker-alpha.min.js',  __FILE__ ), array( 'wp-color-picker' ), '1.0.0', true );
     }
     public function add_plugin_admin_menu(){
         add_menu_page('Subscribe', 'Subscribe', 'manage_options', 'plugin-name', array($this, 'display_plugin_setup_page'));
@@ -104,7 +107,7 @@ class Plugin_Name_Admin{
                 array(                             
                     'Activate this setting in order to send confirmation link to your subscribers.'
                 )
-        );
+            );
             add_settings_field(
                 'email',                      
                 'From email',                           
@@ -114,102 +117,129 @@ class Plugin_Name_Admin{
                 array(                              
                     'Type the email which you are going to use when sending emails to your subscribers.'
                 )
-        );
+            );
             add_settings_field(
-        'name',                     
-        'From name',                           
-        'subscribe_from_name_callback',   
-        'plugin-name',                          
-        'general_settings_section',         
-            array(                              
-                'Type the name which you are going to use when sending emails to your subscribers.'
-            )
-        );
+                'name',                     
+                'From name',                           
+                'subscribe_from_name_callback',   
+                'plugin-name',                          
+                'general_settings_section',         
+                array(                              
+                    'Type the name which you are going to use when sending emails to your subscribers.'
+                )
+            );
             add_settings_field(
-        'button_text',                      
-        'Button text',                           
-        'subscribe_button_text_callback',   
-        'plugin-name',                          
-        'general_settings_section',         
-            array(                              
-                'Choose the display text for your submit button.'
-            )
-        );
+                'button_text',                      
+                'Button text',                           
+                'subscribe_button_text_callback',   
+                'plugin-name',                          
+                'general_settings_section',         
+                array(                              
+                    'Choose the display text for your subscribe button.'
+                )
+            );
+             add_settings_field(
+                'bgcolor',                      
+                'Button Background Color',                           
+                'subscribe_button_background_color_callback',   
+                'plugin-name',                          
+                'general_settings_section',
+                array(                              
+                    'Choose the background color for your subscribe button.'
+                )         
+            );
+              add_settings_field(
+                'color',                      
+                'Button Text Color',                           
+                'subscribe_button_text_color_callback',   
+                'plugin-name',                          
+                'general_settings_section',
+                array(                              
+                    'Choose text color for your subscribe button.'
+                )      
+            );
             add_settings_field(
-        'placeholder',                      
-        'Placeholder',                           
-        'subscribe_placeholder_callback',   
-        'plugin-name',                          
-        'general_settings_section',         
-            array(                              
-                'Choose the placeholder text for email subscribers.'
-            )
-        );
+                'placeholder',                      
+                'Placeholder',                           
+                'subscribe_placeholder_callback',   
+                'plugin-name',                          
+                'general_settings_section',         
+                array(                              
+                    'Choose the placeholder text for email subscribers.'
+                )
+            );
             add_settings_field(
-        'opt_in_subject',                      
-        'Confirmation Email Subject',                           
-        'subscribe_confirmation_email_subject_callback',   
-        'plugin-name',                          
-        'general_settings_section'        
-        );
+                'opt_in_subject',                      
+                'Confirmation Email Subject',                           
+                'subscribe_confirmation_email_subject_callback',   
+                'plugin-name',                          
+                'general_settings_section'        
+            );
             add_settings_field(
-        'opt_in_content',                      
-        'Confirmation Email Content',                           
-        'subscribe_confirmation_email_content_callback',   
-        'plugin-name',                          
-        'general_settings_section'         
-        );
+                'opt_in_content',                      
+                'Confirmation Email Content',                           
+                'subscribe_confirmation_email_content_callback',   
+                'plugin-name',                          
+                'general_settings_section'         
+            );
             add_settings_field(
-        'subject',                      
-        'Email Subject',                           
-        'subscribe_email_subject_callback',   
-        'plugin-name',                          
-        'general_settings_section'        
+                'subject',                      
+                'Email Subject',                           
+                'subscribe_email_subject_callback',   
+                'plugin-name',                          
+                'general_settings_section'        
 
-        );
+            );
             add_settings_field(
-        'content',                      
-        'Email Content',                           
-        'subscribe_email_content_callback',   
-        'plugin-name',                          
-        'general_settings_section'         
-        );
-        
+                'content',                      
+                'Email Content',                           
+                'subscribe_email_content_callback',   
+                'plugin-name',                          
+                'general_settings_section'         
+            );
             register_setting(
-        'general',
-        'opt_in'
-        );
+                'general',
+                'opt_in'
+            );
             register_setting(
-        'general',
-        'email'
-        );
+                'general',
+                'email'
+            );
             register_setting(
-        'general',
-        'name'
-        );
+                'general',
+                'name'
+            );
             register_setting(
-        'general',
-        'button_text'
-        );
+                'general',
+                'button_text'
+            );
             register_setting(
-        'general',
-        'placeholder'
-        );
+                'general',
+                'bgcolor'
+            );
             register_setting(
-        'general',
-        'opt_in_subject'
-        );
+                'general',
+                'color'
+            );
             register_setting(
-        'general',
-        'opt_in_content'
-        );
+                'general',
+                'placeholder'
+            );
             register_setting(
-        'general',
-        'subject'
-        );
+                'general',
+                'opt_in_subject'
+            );
             register_setting(
-        'general',
-        'content'
+                'general',
+                'opt_in_content'
+            );
+            register_setting(
+                'general',
+                'subject'
+            );
+            register_setting(
+                'general',
+                'content'
             );
         }
     }
@@ -250,6 +280,26 @@ class Plugin_Name_Admin{
         }
         $html = '<input type="text" id="button_text" name="button_text" value="' . get_option('button_text') . '" />';
         $html .= '<label for="button_text"> '  . $args[0] . '</label>';
+        echo $html;
+    }
+    function subscribe_button_background_color_callback($args){
+        $options = get_option('subscribe_initialize_plugin_options');
+        $url = '';
+        if (isset($options['bgcolor'])) {
+            $url = $options['bgcolor'];
+        }
+        $html = '<input type="text" id="bgcolor" class="color-field" name="bgcolor" value="' . get_option('bgcolor') . '"  class="cpa-color-picker"/>';
+        $html .= '<label for="bgcolor"> '  . $args[0] . '</label>';
+        echo $html;
+    }
+    function subscribe_button_text_color_callback($args){
+        $options = get_option('subscribe_initialize_plugin_options');
+        $url = '';
+        if (isset($options['color'])) {
+            $url = $options['button_text'];
+        }
+        $html = '<input type="text" id="color" class="color-field" name="color" value="' . get_option('color') . '"  class="cpa-color-picker"/>';
+        $html .= '<label for="bgcolor"> '  . $args[0] . '</label>';
         echo $html;
     }
     function subscribe_placeholder_callback($args){
