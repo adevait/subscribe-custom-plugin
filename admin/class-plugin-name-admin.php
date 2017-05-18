@@ -107,6 +107,7 @@ class Plugin_Name_Admin{
                 array(                             
                     'Activate this setting in order to send confirmation link to your subscribers.'
                 )
+
             );
             add_settings_field(
                 'email',                      

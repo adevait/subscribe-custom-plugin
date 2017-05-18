@@ -51,6 +51,7 @@ class subscribe_widget extends WP_Widget{
 		   		<input id="email" type="email" name="email" style="width:330px; height:35px;" placeholder="<?php echo get_option('placeholder'); ?>" required unique>
 		   		<input type="hidden" name="action" value="Subscribe"/>
 		   		<input type="button" id="subscribe" name="subscribe" style="width:330px; background-color:<?php echo get_option('bgcolor'); ?>; color:<?php echo get_option('color'); ?>;" value="<?php echo get_option('button_text'); ?>">
+
 		   		<label id="successmessage"></label>
 		   </form>
 		   <script type="text/javascript">
